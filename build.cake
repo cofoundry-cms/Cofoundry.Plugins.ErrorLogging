@@ -67,7 +67,7 @@ Task("Build")
     if(IsRunningOnWindows())
     {
       // Use MSBuild
-      MSBuild("./src/Cofoundry.Plugins.DependencyInjection.Autofac.sln", settings => settings.SetConfiguration(configuration));
+      MSBuild("./src/Cofoundry.Plugins.ErrorLogging.sln", settings => settings.SetConfiguration(configuration));
     }
     // Git Link: http://www.michael-whelan.net/continuous-delivery-github-cake-gittools-appveyor/
 });
