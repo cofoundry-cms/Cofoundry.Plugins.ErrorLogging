@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cofoundry.Plugins.ErrorLogging", "Cofoundry.Plugins.ErrorLogging\Cofoundry.Plugins.ErrorLogging.csproj", "{AA561428-08C2-4F44-9D18-E5060207D74B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cofoundry.Plugins.ErrorLogging.Admin", "Cofoundry.Plugins.ErrorLogging.Admin\Cofoundry.Plugins.ErrorLogging.Admin.csproj", "{2C6BEB2A-AF5A-40CC-B3D4-64861F178D2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA561428-08C2-4F44-9D18-E5060207D74B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA561428-08C2-4F44-9D18-E5060207D74B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA561428-08C2-4F44-9D18-E5060207D74B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA561428-08C2-4F44-9D18-E5060207D74B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C6BEB2A-AF5A-40CC-B3D4-64861F178D2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C6BEB2A-AF5A-40CC-B3D4-64861F178D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C6BEB2A-AF5A-40CC-B3D4-64861F178D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C6BEB2A-AF5A-40CC-B3D4-64861F178D2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
