@@ -47,7 +47,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\Cofoundry.Plugins.ErrorLogging.Admin.dll" target="lib\net461" />
-    <file src="bin\Release\Cofoundry.Plugins.ErrorLogging.Admin.XML" target="lib\net461" />
+    <file src="bin\Cofoundry.Plugins.ErrorLogging.Admin.dll" target="lib\net461" />
+    <file src="bin\Cofoundry.Plugins.ErrorLogging.Admin.XML" target="lib\net461" />
   </files>
 </package>
