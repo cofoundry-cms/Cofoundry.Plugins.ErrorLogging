@@ -220,6 +220,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Bootstrap\AssemblyResourceRegistration.cs" />
     <Compile Include="Plugins\Admin\Api\Errors\ErrorsApiController.cs" />
     <Compile Include="Plugins\Admin\Modules\Errors\Bootstrap\ErrorsModuleRegistration.cs" />
     <Compile Include="Plugins\Admin\Modules\Errors\Constants\ErrorsRouteLibrary.cs" />
@@ -266,7 +267,7 @@
   </Target>
   <Target Name="BeforeBuild">
     <ItemGroup>
-      <EmbeddedResource Include="plugins\modules\*\mvc\views\**\*.cshtml;plugins\modules\*\mvc\views\**\*.js;plugins\modules\*\js\**\*.*;plugins\modules\*\content\**\*.*;" />
+      <EmbeddedResource Include="plugins\admin\modules\*\mvc\views\**\*.cshtml;plugins\admin\modules\*\mvc\views\**\*.js;plugins\admin\modules\*\js\**\*.*;plugins\admin\modules\*\content\**\*.*;" />
     </ItemGroup>
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
