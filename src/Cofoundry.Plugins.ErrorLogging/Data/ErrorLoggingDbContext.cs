@@ -33,7 +33,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder
-                .UseDefaultConfig(DbConstants.CofoundrySchema)
+                .UseDefaultConfig(DbConstants.CofoundryPluginSchema)
                 .Map(new ErrorMap());
         }
 

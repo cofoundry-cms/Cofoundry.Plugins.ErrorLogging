@@ -17,10 +17,10 @@
 
       <dependency id="Antlr" version="3.5.0.2" />
       <dependency id="AutoMapper" version="5.2.0" />
-      <dependency id="Cofoundry.Core" version="0.1.0-beta0100" />
-      <dependency id="Cofoundry.Domain" version="0.1.0-beta0100" />
-      <dependency id="Cofoundry.Web" version="0.1.0-beta0100" />
-      <dependency id="Cofoundry.Web.Admin" version="0.1.0-beta0100" />
+      <dependency id="Cofoundry.Core" version="0.1.0-beta0101" />
+      <dependency id="Cofoundry.Domain" version="0.1.0-beta0101" />
+      <dependency id="Cofoundry.Web" version="0.1.0-beta0101" />
+      <dependency id="Cofoundry.Web.Admin" version="0.1.0-beta0101" />
       <dependency id="CommonServiceLocator" version="1.3" />
       <dependency id="Conditions" version="2.1.0" />
       <dependency id="EntityFramework" version="6.1.3" />
