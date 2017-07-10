@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Cofoundry.Domain.Data;
 using Cofoundry.Domain.CQS;
 using AutoMapper.QueryableExtensions;
-using System.Data.Entity;
 using Cofoundry.Domain;
 using Cofoundry.Plugins.ErrorLogging.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cofoundry.Plugins.ErrorLogging.Domain
 {

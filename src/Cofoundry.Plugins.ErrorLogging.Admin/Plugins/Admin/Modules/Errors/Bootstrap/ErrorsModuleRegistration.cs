@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Cofoundry.Domain;
 using Cofoundry.Web.Admin;
 using Cofoundry.Plugins.ErrorLogging.Domain;
@@ -19,7 +18,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
                 Description = "View the site error logs.",
                 MenuCategory = AdminModuleMenuCategory.Settings,
                 PrimaryOrdering = AdminModuleMenuPrimaryOrdering.Tertiary,
-                Url = ErrorsRouteLibrary.Urls.List(),
+                Url = new ErrorsRouteLibrary().List(),
                 RestrictedToPermission = new ErrorLogReadPermission()
             };
 

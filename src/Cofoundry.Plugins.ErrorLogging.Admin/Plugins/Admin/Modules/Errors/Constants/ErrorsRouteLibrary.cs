@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace Cofoundry.Plugins.ErrorLogging.Admin
 {
@@ -11,10 +10,6 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
         #region statics
 
         public const string RoutePrefix = "errors";
-
-        public static readonly ErrorsRouteLibrary Urls = new ErrorsRouteLibrary();
-
-        public static readonly ModuleJsRouteLibrary Js = new ModuleJsRouteLibrary(Urls);
 
         #endregion
 
@@ -31,12 +26,12 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
 
         public string List()
         {
-            return CreateAngularRoute();
+            return AngularRoute();
         }
 
         public string Details(int id)
         {
-            return CreateAngularRoute(id.ToString());
+            return AngularRoute(id.ToString());
         }
 
         #endregion

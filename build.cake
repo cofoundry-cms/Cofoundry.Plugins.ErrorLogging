@@ -1,5 +1,7 @@
 #tool "nuget:?package=GitVersion.CommandLine"
 
+using System.Text.RegularExpressions;
+
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -9,6 +11,12 @@ var configuration = Argument("configuration", "Release");
 var pushPackages = Argument("PushPackages", "false") == "true";
 bool isPrerelease = false;
 GitVersion versionInfo = null;
+
+var projectsToBuild = new string[]{
+    "./src/Cofoundry.Plugins.ErrorLogging/Cofoundry.Plugins.ErrorLogging.csproj",
+    "./src/Cofoundry.Plugins.ErrorLogging.Admin/Cofoundry.Plugins.ErrorLogging.Admin.csproj",
+};
+
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -27,15 +35,8 @@ Task("Clean")
     CleanDirectory(nugetPackageDir);
     CleanDirectories("./src/**/bin/" + configuration);
     CleanDirectories("./src/**/obj/" + configuration);
-    CleanDirectory("./src/Cofoundry.Plugins.ErrorLogging.Admin/bin/");
 });
 
-Task("Restore-NuGet-Packages")
-    .IsDependentOn("Clean")
-    .Does(() =>
-{
-    NuGetRestore("./src/Cofoundry.Plugins.ErrorLogging.sln");
-});
 
 Task("Patch-Assembly-Version")
     .IsDependentOn("Clean")
@@ -45,28 +46,48 @@ Task("Patch-Assembly-Version")
         UpdateAssemblyInfo = false
     });
 
-    Information("Building version {0} of Cofoundry.Plugins.ErrorLogging.", versionInfo.InformationalVersion);
+    Information("Building version {0} of Cofoundry.", versionInfo.InformationalVersion);
 
     isPrerelease = !string.IsNullOrEmpty(versionInfo.PreReleaseNumber);
 
-    var file = "./src/SolutionInfo.cs";
-	CreateAssemblyInfo(file, new AssemblyInfoSettings {
-		Version = versionInfo.AssemblySemVer,
-		FileVersion = versionInfo.MajorMinorPatch + ".0",
-		InformationalVersion = versionInfo.InformationalVersion,
-		Copyright = "Copyright © Cofoundry.org " + DateTime.Now.Year
-	});
+    // Patch the version number so it's picked up when dependent projects are references
+    // as nuget dependencies. Can't find a better way to do this.
+    // Also this needs to run before DotNetCoreRestore for some reason (cached?)
+    var file = MakeAbsolute(File("./src/Directory.Build.props"));
+    var xml = System.IO.File.ReadAllText(file.FullPath, Encoding.UTF8);
+    xml = Regex.Replace(xml, @"(<Version>)(.+)(<\/Version>)", "${1}" +  versionInfo.NuGetVersion +"${3}");
+    System.IO.File.WriteAllText(file.FullPath, xml, Encoding.UTF8);
+});
+
+Task("Restore-NuGet-Packages")
+    .IsDependentOn("Patch-Assembly-Version")
+    .Does(() =>
+{
+    foreach (var projectToBuild in projectsToBuild)
+    {
+        DotNetCoreRestore(projectToBuild);
+    }
 });
 
 Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
-    .IsDependentOn("Patch-Assembly-Version")
     .Does(() =>
 {
-    if(IsRunningOnWindows())
+    
+    var settings = new DotNetCoreBuildSettings
+        {
+            Configuration = configuration,
+            ArgumentCustomization = args => args
+                .Append("/p:NuGetVersion=" + versionInfo.NuGetVersion)
+                .Append("/p:AssemblyVersion=" + versionInfo.AssemblySemVer)
+                .Append("/p:FileVersion=" + versionInfo.MajorMinorPatch + ".0")
+                .Append("/p:InformationalVersion=" + versionInfo.InformationalVersion)
+                .Append("/p:Copyright=" + "\"Copyright © Cofoundry.org " + DateTime.Now.Year + "\"")
+        };
+    
+    foreach (var projectToBuild in projectsToBuild)
     {
-      // Use MSBuild
-      MSBuild("./src/Cofoundry.Plugins.ErrorLogging.sln", settings => settings.SetConfiguration(configuration));
+        DotNetCoreBuild(projectToBuild, settings);
     }
 });
 
@@ -74,20 +95,16 @@ Task("Pack")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var nugetFilePaths = GetFiles("./src/Cofoundry.*/*.nuspec");
+    var settings = new DotNetCorePackSettings
+        {
+            Configuration = configuration,
+            OutputDirectory = "./artifacts/",
+            NoBuild = true
+        };
     
-    var nuGetPackSettings = new NuGetPackSettings
-    {   
-        Version = versionInfo.NuGetVersion,
-        OutputDirectory = nugetPackageDir,
-        Verbosity = NuGetVerbosity.Detailed,
-        ArgumentCustomization = args => args.Append("-Prop Configuration=" + configuration)
-    };
-    
-    foreach (var path in nugetFilePaths)
+    foreach (var projectToBuild in projectsToBuild)
     {
-        Information("Packing:" + path);
-        NuGetPack(path, nuGetPackSettings);
+        DotNetCorePack(projectToBuild, settings);
     }
 });
 

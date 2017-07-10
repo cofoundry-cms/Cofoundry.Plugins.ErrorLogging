@@ -1,34 +1,39 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+using System;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Cofoundry.Core;
+using Cofoundry.Domain.Data;
 
 namespace Cofoundry.Plugins.ErrorLogging.Data
 {
-    public class ErrorMap : EntityTypeConfiguration<Error>
+    public class ErrorMap : IEntityTypeConfiguration<Error>
     {
-        public ErrorMap()
+        public void Create(EntityTypeBuilder<Error> builder)
         {
+            builder.ToTable("Error", DbConstants.CofoundrySchema);
+
             // Properties
-            this.Property(t => t.ExceptionType)
+            builder.Property(t => t.ExceptionType)
                 .IsRequired();
 
-            this.Property(t => t.Url)
+            builder.Property(t => t.Url)
                 .HasMaxLength(255);
 
-            this.Property(t => t.Source)
+            builder.Property(t => t.Source)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            this.Property(t => t.Target)
+            builder.Property(t => t.Target)
                 .IsRequired()
                 .HasMaxLength(255);
 
-            this.Property(t => t.StackTrace)
+            builder.Property(t => t.StackTrace)
                 .IsRequired();
 
-            this.Property(t => t.QueryString)
+            builder.Property(t => t.QueryString)
                 .HasMaxLength(255);
 
-            this.Property(t => t.UserAgent)
+            builder.Property(t => t.UserAgent)
                 .HasMaxLength(255);
         }
     }

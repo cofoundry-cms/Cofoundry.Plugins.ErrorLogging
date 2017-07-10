@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Cofoundry.Domain.CQS;
 using Cofoundry.Web.WebApi;
 using Cofoundry.Web.Admin;
 using Cofoundry.Plugins.ErrorLogging.Domain;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cofoundry.Plugins.ErrorLogging.Admin
 {
-    [RoutePrefix(RouteConstants.PluginApiRoutePrefix + "/Errors")]
+    [Route(RouteConstants.PluginApiRoutePrefix + "/Errors")]
     public class ErrorsApiController : BaseAdminApiController
     {
         #region private member variables
@@ -40,8 +40,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
         #region queries
 
         [HttpGet]
-        [Route]
-        public async Task<IHttpActionResult> Get([FromUri] SearchErrorSummariesQuery query)
+        public async Task<IActionResult> Get([FromQuery] SearchErrorSummariesQuery query)
         {
             if (query == null) query = new SearchErrorSummariesQuery();
 
@@ -49,9 +48,8 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
             return _apiResponseHelper.SimpleQueryResponse(this, results);
         }
         
-        [HttpGet]
-        [Route(ID_ROUTE)]
-        public async Task<IHttpActionResult> Get(int errorId)
+        [HttpGet(ID_ROUTE)]
+        public async Task<IActionResult> Get(int errorId)
         {
             var result = await _queryExecutor.GetByIdAsync<ErrorDetails>(errorId);
             return _apiResponseHelper.SimpleQueryResponse(this, result);

@@ -13,7 +13,7 @@ This plugin contains a simple implementation of `IErrorLoggingService` that logs
 
 The [Cofoundry.Plugins.ErrorLogging.Admin](https://www.nuget.org/packages/Cofoundry.Plugins.ErrorLogging/) package can be installed to enable an error log section in the admin panel.
 
-*Note that this current version of the error logging package has not been given much attention. We will be giving this a lot more love in upcoming releases.*
+*Note that this current version of the error logging package has not been given much attention. We will be giving this a little more love in upcoming releases.*
 
 ## Settings
 

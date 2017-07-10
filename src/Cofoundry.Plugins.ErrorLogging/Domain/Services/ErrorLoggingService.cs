@@ -3,51 +3,57 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Diagnostics;
-using Cofoundry.Domain.CQS;
-using Cofoundry.Core.Configuration;
 using Cofoundry.Core.Mail;
-using Cofoundry.Core.ErrorLogging;
 using Cofoundry.Domain;
 using Cofoundry.Plugins.ErrorLogging.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Net.Http.Headers;
+using Microsoft.AspNetCore.Http.Features;
+using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Cofoundry.Plugins.ErrorLogging.Domain
 {
     public class ErrorLoggingService : IErrorLoggingService
     {
+        private readonly IUserContextService _userContextService;
         private readonly IMailDispatchService _mailService;
-        private readonly IQueryExecutor _queryExecutor;
         private readonly ErrorLoggingDbContext _dbContext;
-        private readonly IConfigurationService _configurationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ErrorLoggingSettings _errorLoggingSettings;
+        private readonly ILogger<ErrorLoggingService> _logger;
 
         #region constructor
 
         public ErrorLoggingService(
-            IQueryExecutor queryExecutor,
-            IConfigurationService configurationService,
+            IUserContextService userContextService,
             IMailDispatchService mailService,
             ErrorLoggingDbContext dbContext,
-            ErrorLoggingSettings errorLoggingSettings
+            IHttpContextAccessor httpContextAccessor,
+            ErrorLoggingSettings errorLoggingSettings,
+            ILogger<ErrorLoggingService> logger
             )
         {
-            _queryExecutor = queryExecutor;
+            _userContextService = userContextService;
             _mailService = mailService;
             _dbContext = dbContext;
-            _configurationService = configurationService;
+            _httpContextAccessor = httpContextAccessor;
             _errorLoggingSettings = errorLoggingSettings;
+            _logger = logger;
         }
 
         #endregion
 
         #region public methods
 
-        public void Log(Exception ex)
+        public async Task LogAsync(Exception ex)
         {
             var inner = ex.GetBaseException() ?? ex;
+            var httpContext = _httpContextAccessor.HttpContext;
 
-            var error = MapError(inner);
+            var error = MapError(inner, httpContext);
             string additionalText;
             Exception dbLoggingException = null;
 
@@ -61,58 +67,68 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
             {
                 dbLoggingException = loggingEx;
                 additionalText = String.Format("\r\n\r\nSaved in DB: No\r\n\r\nException:{0}", loggingEx.Message);
+
+                var msg = "An exception occured while logging an error to the database.";
+                _logger.LogError(0, loggingEx, msg);
+                Debug.Assert(false, msg);
             }
 
             if (!string.IsNullOrWhiteSpace(_errorLoggingSettings.LogToEmailAddress))
             {
                 try
                 {
-                    SendMail(error, additionalText);
+                    await SendMailAsync(httpContext, error, additionalText);
                     error.EmailSent = true;
                     _dbContext.SaveChanges();
                 }
-                catch
+                catch (Exception mailException)
                 {
+                    var msg = "An exception occured while sending an error logging email.";
+                    _logger.LogError(0, mailException, msg);
+                    Debug.Assert(false, msg);
                 }
             }
-        }
-
-        public void LogWarning(Exception ex)
-        {
-            // TODO: Implement warning category
-            Log(ex);
         }
 
         #endregion
 
         #region private helpers
 
-        private Error MapError(Exception ex)
+        private Error MapError(Exception ex, HttpContext context)
         {
             Error error = new Error
             {
                 Source = ex.Source ?? string.Empty,
                 ExceptionType = ex.Message ?? string.Empty,
-                Target = Convert.ToString(ex.TargetSite),
+                Target = string.Empty, // removed in netcore?
                 StackTrace = ex.StackTrace ?? string.Empty,
                 EmailSent = false,
                 CreateDate = DateTime.UtcNow
             };
 
-            if (HttpContext.Current != null && HttpContext.Current.Request != null)
+            if (context != null && context.Request != null)
             {
-                error.Url = HttpContext.Current.Request.Url.AbsoluteUri;
-                error.QueryString = HttpContext.Current.Request.QueryString.ToString();
-                error.Session = "";
-                error.Form = HttpContext.Current.Request.Unvalidated.Form.ToString();
-                error.UserAgent = HttpContext.Current.Request.UserAgent.ToString();
-
-                if (HttpContext.Current.Session != null)
+                error.Url = context.Request.Method + " " + context.Request.GetDisplayUrl();
+                error.QueryString = context.Request.QueryString.ToString();
+                if (context.Request.HasFormContentType)
                 {
-                    foreach (var sessionItem in HttpContext.Current.Session)
-                    {
-                        error.Session += sessionItem.ToString() + " ";
-                    }
+                    var formItems = context
+                        .Request
+                        .Form
+                        .Keys
+                        .Select(k => $"{k}: {context.Request.Form[k]}");
+                    error.Form = string.Join(Environment.NewLine, formItems);
+                }
+                error.UserAgent = context.Request.Headers[HeaderNames.UserAgent];
+
+                if (context.Features.Get<ISessionFeature>() != null && context.Session.IsAvailable)
+                {
+                    var sessionItems = context
+                        .Session
+                        .Keys
+                        .Select(k => $"{k}: {context.Session.GetString(k)}");
+
+                    error.Session = string.Join(Environment.NewLine, sessionItems);
                 }
             }
 
@@ -120,64 +136,65 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
             {
                 error.Data = string.Join(", ", ex.Data);
             }
+
             return error;
         }
 
-        private void SendMail(Error error, string additionalText)
+        private async Task SendMailAsync(HttpContext httpContxt, Error error, string additionalText)
         {
-            var hasRequest = HttpContext.Current != null && HttpContext.Current.Request != null;
-            var user = _queryExecutor.Execute(new GetCurrentUserMicroSummaryQuery());
+            var hasRequest = httpContxt != null && httpContxt.Request != null;
+            var user = await _userContextService.GetCurrentContextAsync();
+            var userText = user == null ? "Unauthenticated" : String.Format("{0}: {1}", user?.UserArea.Name, user.UserId);
 
-            string bodyText = String.Format("Url: {0}\r\n\r\nUser: {1}\r\n\r\nException: {2}\r\n\r\nTarget site: {3}\r\n\r\nStack trace: {4}",
-                hasRequest ? HttpContext.Current.Request.Url.AbsoluteUri : string.Empty,
-                user == null ? "Unauthenticated" : String.Format("{0}: {1}", user?.UserArea.Name, user.Email),
-                error.ExceptionType,
-                error.Target,
-                error.StackTrace);
-
+            var bodyText = new StringBuilder();
+            bodyText.AppendLine("Url: " + error.Url);
+            bodyText.AppendLine();
+            bodyText.AppendLine("User: " + userText);
+            bodyText.AppendLine();
+            bodyText.AppendLine("Exception: " + error.ExceptionType);
+            bodyText.AppendLine();
+            bodyText.AppendLine("Stack trace:");
+            bodyText.AppendLine(error.StackTrace);
+            bodyText.AppendLine();
 
             if (hasRequest)
             {
-                var form = HttpContext.Current.Request.Unvalidated.Form;
+                bodyText.AppendLine("Query string: " + error.QueryString);
+                bodyText.AppendLine();
 
-                bodyText = String.Format("{0}\r\n\r\nQuery string: {1}", bodyText, error.QueryString);
-
-                if (HttpContext.Current.Session.Keys.Count > 0)
+                if (!String.IsNullOrEmpty(error.UserAgent))
                 {
-                    bodyText = String.Format("{0}\r\n\r\nSession:\r\n", bodyText);
-
-                    for (int i = 0; i < HttpContext.Current.Session.Keys.Count; i++)
-                    {
-                        bodyText = String.Format("{0}\r\n{1}", bodyText, HttpContext.Current.Session.Keys[i].ToString());
-                    }
+                    bodyText.AppendLine("UserAgent: " + error.UserAgent);
+                    bodyText.AppendLine();
                 }
 
-                if (form.Keys.Count > 0)
+                if (!string.IsNullOrEmpty(error.Session))
                 {
-                    bodyText = String.Format("{0}\r\n\r\nForm:\r\n", bodyText);
-
-                    foreach (string key in form.Keys)
-                    {
-                        bodyText = String.Format("{0}\r\n{1}: {2}", bodyText, key, form.GetValues(key).Aggregate("", (a, b) => (a + "," + b)));
-                    }
+                    bodyText.AppendLine("Session:");
+                    bodyText.AppendLine(error.Session);
+                    bodyText.AppendLine();
                 }
 
-                if (!String.IsNullOrEmpty(HttpContext.Current.Request.UserAgent))
+                if (!string.IsNullOrWhiteSpace(error.Form))
                 {
-                    bodyText = String.Format("{0}\r\n\r\nUser agent:{1}", bodyText, HttpContext.Current.Request.UserAgent.ToString());
+                    bodyText.AppendLine("Form:");
+                    bodyText.AppendLine(error.Form);
+                    bodyText.AppendLine();
                 }
             }
 
             if (error.Data != null)
             {
-                bodyText = String.Format("{0}\r\n\r\nData: {1}", bodyText, error.Data);
+                bodyText.AppendLine("Data:");
+                bodyText.AppendLine(error.UserAgent);
+                bodyText.AppendLine();
             }
 
-            bodyText += additionalText;
+            bodyText.AppendLine(additionalText);
 
             var msg = new MailMessage();
-            msg.TextBody = bodyText;
-            msg.To = new SerializeableMailAddress(_errorLoggingSettings.LogToEmailAddress);
+            msg.TextBody = bodyText.ToString();
+            msg.To = new MailAddress(_errorLoggingSettings.LogToEmailAddress);
             msg.Subject = "Exception: " + error.Source;
 
             if (!Debugger.IsAttached)

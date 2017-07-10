@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cofoundry.Core.DependencyInjection;
-using Cofoundry.Core.ErrorLogging;
 using Cofoundry.Plugins.ErrorLogging.Domain;
-using Cofoundry.Domain.Data;
 using Cofoundry.Plugins.ErrorLogging.Data;
 using Cofoundry.Core.Configuration;
 

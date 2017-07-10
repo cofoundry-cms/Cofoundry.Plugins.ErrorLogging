@@ -1,7 +1,8 @@
 using Cofoundry.Core;
 using Cofoundry.Domain.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Data.Entity;
 
 namespace Cofoundry.Plugins.ErrorLogging.Data
 {
@@ -9,15 +10,22 @@ namespace Cofoundry.Plugins.ErrorLogging.Data
     {
         #region constructor
 
-        static ErrorLoggingDbContext()
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly DatabaseSettings _databaseSettings;
+
+        public ErrorLoggingDbContext(
+            ILoggerFactory loggerFactory,
+            DatabaseSettings databaseSettings
+            )
         {
-            Database.SetInitializer<ErrorLoggingDbContext>(null);
+            _loggerFactory = loggerFactory;
+            _databaseSettings = databaseSettings;
         }
 
-        public ErrorLoggingDbContext()
-            : base(DbConstants.ConnectionStringName)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            DbContextConfigurationHelper.SetDefaults(this);
+            optionsBuilder.UseLoggerFactory(_loggerFactory);
+            optionsBuilder.UseSqlServer(_databaseSettings.ConnectionString);
         }
 
         #endregion
@@ -30,7 +38,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Data
         
         #region mapping
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .UseDefaultConfig(DbConstants.CofoundryPluginSchema)

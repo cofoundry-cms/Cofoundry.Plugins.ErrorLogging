@@ -7,6 +7,7 @@ using Cofoundry.Domain.CQS;
 using Cofoundry.Domain.Data;
 using Cofoundry.Domain;
 using Cofoundry.Plugins.ErrorLogging.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cofoundry.Plugins.ErrorLogging.Domain
 {
