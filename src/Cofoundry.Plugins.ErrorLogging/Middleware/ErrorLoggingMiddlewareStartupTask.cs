@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Cofoundry.Plugins.ErrorLogging
 {
-    public class ErrorLoggingMiddlewareStartupTask : IStartupTask
+    public class ErrorLoggingMiddlewareStartupTask : IStartupConfigurationTask
     {
         public int Ordering
         {
-            get { return (int)StartupTaskOrdering.Early; }
+            get { return (int)StartupTaskOrdering.First; }
         }
 
-        public void Run(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseMiddleware<ErrorLoggingMiddleware>();
         }
