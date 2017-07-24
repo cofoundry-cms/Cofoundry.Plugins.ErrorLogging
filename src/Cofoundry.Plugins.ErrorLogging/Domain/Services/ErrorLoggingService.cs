@@ -199,7 +199,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
 
             if (!Debugger.IsAttached)
             {
-                _mailService.Dispatch(msg);
+                await _mailService.DispatchAsync(msg);
             }
         }
 
