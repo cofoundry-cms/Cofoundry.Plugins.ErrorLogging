@@ -2,13 +2,12 @@ using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Cofoundry.Core;
-using Cofoundry.Domain.Data;
 
 namespace Cofoundry.Plugins.ErrorLogging.Data
 {
     public class ErrorMap : IEntityTypeConfiguration<Error>
     {
-        public void Create(EntityTypeBuilder<Error> builder)
+        public void Configure(EntityTypeBuilder<Error> builder)
         {
             builder.ToTable("Error", DbConstants.CofoundrySchema);
 

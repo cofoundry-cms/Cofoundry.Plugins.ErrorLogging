@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
 
     <PackageId>Cofoundry.Plugins.ErrorLogging.Admin</PackageId>
     <Description>Adds simple database error logging to Cofoundry.</Description>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Web.Admin" Version="0.2.0-beta0022" />
+    <PackageReference Include="Cofoundry.Web.Admin" Version="0.2.0-beta0056" />
   </ItemGroup>
 
   <ItemGroup>

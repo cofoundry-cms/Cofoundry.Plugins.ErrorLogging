@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.QueryableExtensions;
 using Cofoundry.Domain.CQS;
 using Cofoundry.Domain.Data;
 using Cofoundry.Domain;
@@ -41,10 +40,6 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
             return result;
         }
 
-        #endregion
-
-        #region helpers
-
         private IQueryable<ErrorSummary> CreateQuery(SearchErrorSummariesQuery query)
         {
             var dbQuery = _dbContext
@@ -63,7 +58,14 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
 
             return dbQuery
                 .OrderByDescending(u => u.CreateDate)
-                .ProjectTo<ErrorSummary>();
+                .Select(e => new ErrorSummary()
+                {
+                    CreateDate = e.CreateDate,
+                    ErrorId = e.ErrorId,
+                    ExceptionType = e.ExceptionType,
+                    Url = e.Url,
+                    UserAgent = e.UserAgent
+                });
         }
 
 

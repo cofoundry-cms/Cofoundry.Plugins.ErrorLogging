@@ -42,7 +42,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Data
         {
             modelBuilder
                 .UseDefaultConfig(DbConstants.CofoundryPluginSchema)
-                .Map(new ErrorMap());
+                .ApplyConfiguration(new ErrorMap());
         }
 
         #endregion

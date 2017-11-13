@@ -14,16 +14,11 @@ namespace Cofoundry.Plugins.ErrorLogging.Bootstrap
     {
         public void Register(IContainerRegister container)
         {
-            var overrideOptions = new RegistrationOptions()
-            {
-                ReplaceExisting = true,
-                RegistrationOverridePriority = (int)RegistrationOverridePriority.Low
-            };
+            var overrideOptions = RegistrationOptions.Override(RegistrationOverridePriority.Low);
 
             container
                 .RegisterType<IErrorLoggingService, ErrorLoggingService>(overrideOptions)
-                .RegisterDatabase<ErrorLoggingDbContext>()
-                .RegisterFactory<ErrorLoggingSettings, ConfigurationSettingsFactory<ErrorLoggingSettings>>()
+                .RegisterType<ErrorLoggingDbContext>()
                 ;
         }
     }

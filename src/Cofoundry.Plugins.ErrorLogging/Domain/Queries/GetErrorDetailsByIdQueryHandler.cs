@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cofoundry.Domain.CQS;
-using AutoMapper.QueryableExtensions;
 using Cofoundry.Domain;
 using Cofoundry.Plugins.ErrorLogging.Data;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +28,22 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
                 .Errors
                 .AsNoTracking()
                 .Where(u => u.ErrorId == query.Id)
-                .ProjectTo<ErrorDetails>()
+                .Select(e => new ErrorDetails()
+                {
+                    CreateDate = e.CreateDate,
+                    Data = e.Data,
+                    EmailSent = e.EmailSent,
+                    ErrorId = e.ErrorId,
+                    ExceptionType = e.ExceptionType,
+                    Form = e.Form,
+                    QueryString = e.QueryString,
+                    Session = e.QueryString,
+                    Source = e.Source,
+                    StackTrace = e.QueryString,
+                    Target = e.Target,
+                    Url = e.Url,
+                    UserAgent = e.UserAgent
+                })
                 .SingleOrDefaultAsync();
 
             return error;
