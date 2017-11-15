@@ -11,21 +11,19 @@ namespace Cofoundry.Plugins.ErrorLogging
     public class ErrorLoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IErrorLoggingService _errorLoggingService;
-        private readonly ILogger<ErrorLoggingMiddleware> _logger;
 
         public ErrorLoggingMiddleware(
-            RequestDelegate next,
-            ILogger<ErrorLoggingMiddleware> logger,
-             IErrorLoggingService errorLoggingService
+            RequestDelegate next
             )
         {
             _next = next;
-            _logger = logger;
-            _errorLoggingService = errorLoggingService;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(
+            HttpContext context,
+            ILogger<ErrorLoggingMiddleware> logger,
+            IErrorLoggingService errorLoggingService
+            )
         {
             try
             {
@@ -35,14 +33,14 @@ namespace Cofoundry.Plugins.ErrorLogging
             {
                 try
                 {
-                    await _errorLoggingService.LogAsync(ex);
+                    await errorLoggingService.LogAsync(ex);
                 }
                 catch (Exception loggingEx)
                 {
                     // The original exception should still be logged by the outer handler, here we
                     // just log loggingEx
                     var msg = "An error occured logging exception {0} using handler type {1}";
-                    _logger.LogError(0, loggingEx, msg, ex.GetType().FullName, _errorLoggingService.GetType().FullName);
+                    logger.LogError(0, loggingEx, msg, ex.GetType().FullName, errorLoggingService.GetType().FullName);
                 }
 
                 throw;

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Cofoundry.Core.DependencyInjection;
 using Cofoundry.Plugins.ErrorLogging.Domain;
 using Cofoundry.Plugins.ErrorLogging.Data;
-using Cofoundry.Core.Configuration;
 
 namespace Cofoundry.Plugins.ErrorLogging.Bootstrap
 {
