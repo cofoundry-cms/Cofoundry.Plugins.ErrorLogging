@@ -15,11 +15,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Web.Admin" Version="0.2.0-beta0067" />
+    <PackageReference Include="Cofoundry.Web.Admin" Version="0.2.0-beta0073" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Cofoundry.Plugins.ErrorLogging\Cofoundry.Plugins.ErrorLogging.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Build\node_modules\**" />
+    <EmbeddedResource Remove="Build\node_modules\**" />
+    <None Remove="Build\node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Plugins\Admin\Modules\*\Content\**\*.*;" />
+  </ItemGroup>
+  
 </Project>
