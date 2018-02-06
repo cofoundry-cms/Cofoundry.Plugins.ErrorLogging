@@ -9,7 +9,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Data
     {
         public void Configure(EntityTypeBuilder<Error> builder)
         {
-            builder.ToTable("Error", DbConstants.CofoundrySchema);
+            builder.ToTable("Error", DbConstants.CofoundryPluginSchema);
 
             // Properties
             builder.Property(t => t.ExceptionType)
