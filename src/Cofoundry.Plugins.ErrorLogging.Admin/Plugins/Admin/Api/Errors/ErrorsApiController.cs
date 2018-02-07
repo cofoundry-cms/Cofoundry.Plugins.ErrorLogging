@@ -18,7 +18,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
         private const string ID_ROUTE = "{errorId:int}";
 
         private readonly IQueryExecutor _queryExecutor;
-        private readonly ApiResponseHelper _apiResponseHelper;
+        private readonly IApiResponseHelper _apiResponseHelper;
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
 
         public ErrorsApiController(
             IQueryExecutor queryExecutor,
-            ApiResponseHelper apiResponseHelper
+            IApiResponseHelper apiResponseHelper
             )
         {
             _queryExecutor = queryExecutor;
