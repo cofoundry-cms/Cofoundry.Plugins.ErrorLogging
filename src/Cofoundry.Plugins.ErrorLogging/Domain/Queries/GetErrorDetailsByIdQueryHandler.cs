@@ -39,7 +39,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
                     QueryString = e.QueryString,
                     Session = e.QueryString,
                     Source = e.Source,
-                    StackTrace = e.QueryString,
+                    StackTrace = e.StackTrace,
                     Target = e.Target,
                     Url = e.Url,
                     UserAgent = e.UserAgent
