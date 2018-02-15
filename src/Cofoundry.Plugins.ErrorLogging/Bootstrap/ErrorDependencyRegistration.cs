@@ -14,8 +14,8 @@ namespace Cofoundry.Plugins.ErrorLogging.Bootstrap
         public void Register(IContainerRegister container)
         {
             container
-                .RegisterType<IErrorLoggingService, ErrorLoggingService>()
-                .RegisterType<ErrorLoggingDbContext>()
+                .Register<IErrorLoggingService, ErrorLoggingService>()
+                .Register<ErrorLoggingDbContext>()
                 ;
         }
     }

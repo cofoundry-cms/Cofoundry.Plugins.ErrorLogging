@@ -13,7 +13,7 @@ namespace Cofoundry.Plugins.ErrorLogging
             get { return (int)StartupTaskOrdering.First; }
         }
 
-        public Type[] RunAfter => new Type[] { typeof(ErrorHandlingMiddlewareConfigurationTask) };
+        public ICollection<Type> RunAfter => new Type[] { typeof(ErrorHandlingMiddlewareConfigurationTask) };
 
         public void Configure(IApplicationBuilder app)
         {

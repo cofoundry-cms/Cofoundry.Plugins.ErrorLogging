@@ -51,7 +51,9 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
         [HttpGet(ID_ROUTE)]
         public async Task<IActionResult> Get(int errorId)
         {
-            var result = await _queryExecutor.GetByIdAsync<ErrorDetails>(errorId);
+            var query = new GetErrorDetailsByIdQuery(errorId);
+            var result = await _queryExecutor.ExecuteAsync(query);
+
             return _apiResponseHelper.SimpleQueryResponse(this, result);
         }
 

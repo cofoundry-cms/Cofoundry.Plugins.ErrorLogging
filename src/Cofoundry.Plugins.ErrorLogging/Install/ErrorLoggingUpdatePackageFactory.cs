@@ -16,12 +16,6 @@ namespace Cofoundry.Plugins.ErrorLogging
             }
         }
 
-        public override IEnumerable<string> DependentModules
-        {
-            get
-            {
-                yield return CofoundryModuleInfo.ModuleIdentifier;
-            }
-        }
+        public override ICollection<string> DependentModules { get; } = new string[] { CofoundryModuleInfo.ModuleIdentifier };
     }
 }

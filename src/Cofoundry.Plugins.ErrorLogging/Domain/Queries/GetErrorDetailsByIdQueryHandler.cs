@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Cofoundry.Plugins.ErrorLogging.Domain
 {
     public class GetErrorDetailsByIdQueryHandler 
-        : IAsyncQueryHandler<GetByIdQuery<ErrorDetails>, ErrorDetails>
-        , IPermissionRestrictedQueryHandler<GetByIdQuery<ErrorDetails>, ErrorDetails>
+        : IAsyncQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails>
+        , IPermissionRestrictedQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails>
     {
         private readonly ErrorLoggingDbContext _dbContext;
 
@@ -22,12 +22,12 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
             _dbContext = dbContext;
         }
 
-        public async Task<ErrorDetails> ExecuteAsync(GetByIdQuery<ErrorDetails> query, IExecutionContext executionContext)
+        public async Task<ErrorDetails> ExecuteAsync(GetErrorDetailsByIdQuery query, IExecutionContext executionContext)
         {
             var error = await _dbContext
                 .Errors
                 .AsNoTracking()
-                .Where(u => u.ErrorId == query.Id)
+                .Where(u => u.ErrorId == query.ErrorId)
                 .Select(e => new ErrorDetails()
                 {
                     CreateDate = e.CreateDate,
@@ -51,7 +51,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
 
         #region Permission
 
-        public IEnumerable<IPermissionApplication> GetPermissions(GetByIdQuery<ErrorDetails> query)
+        public IEnumerable<IPermissionApplication> GetPermissions(GetErrorDetailsByIdQuery query)
         {
             yield return new ErrorLogReadPermission();
         }
