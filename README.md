@@ -20,5 +20,3 @@ The [Cofoundry.Plugins.ErrorLogging.Admin](https://www.nuget.org/packages/Cofoun
 - **Cofoundry:Plugins:ErrorLogging:LogToEmailAddress** If set, an email notification will be sent to this address every time an error occurs.
 
 
-
-
