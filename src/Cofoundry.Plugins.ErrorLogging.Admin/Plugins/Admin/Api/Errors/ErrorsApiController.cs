@@ -13,16 +13,10 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
     [Route(RouteConstants.PluginApiRoutePrefix + "/Errors")]
     public class ErrorsApiController : BaseAdminApiController
     {
-        #region private member variables
-
         private const string ID_ROUTE = "{errorId:int}";
 
         private readonly IQueryExecutor _queryExecutor;
         private readonly IApiResponseHelper _apiResponseHelper;
-
-        #endregion
-
-        #region constructor
 
         public ErrorsApiController(
             IQueryExecutor queryExecutor,
@@ -32,12 +26,6 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
             _queryExecutor = queryExecutor;
             _apiResponseHelper = apiResponseHelper;
         }
-
-        #endregion
-
-        #region routes
-
-        #region queries
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] SearchErrorSummariesQuery query)
@@ -56,9 +44,5 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
 
             return _apiResponseHelper.SimpleQueryResponse(this, result);
         }
-
-        #endregion
-
-        #endregion
     }
 }
