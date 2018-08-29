@@ -1,7 +1,6 @@
 using Cofoundry.Core;
-using Cofoundry.Domain.Data;
+using Cofoundry.Core.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System;
 
 namespace Cofoundry.Plugins.ErrorLogging.Data
@@ -10,41 +9,29 @@ namespace Cofoundry.Plugins.ErrorLogging.Data
     {
         #region constructor
 
-        private readonly ILoggerFactory _loggerFactory;
-        private readonly DatabaseSettings _databaseSettings;
+        private readonly ICofoundryDbContextInitializer _cofoundryDbContextInitializer;
 
         public ErrorLoggingDbContext(
-            ILoggerFactory loggerFactory,
-            DatabaseSettings databaseSettings
+            ICofoundryDbContextInitializer cofoundryDbContextInitializer
             )
         {
-            _loggerFactory = loggerFactory;
-            _databaseSettings = databaseSettings;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseLoggerFactory(_loggerFactory);
-            optionsBuilder.UseSqlServer(_databaseSettings.ConnectionString);
+            _cofoundryDbContextInitializer = cofoundryDbContextInitializer;
         }
 
         #endregion
-
-        #region properties
 
         public DbSet<Error> Errors { get; set; }
 
-        #endregion
-        
-        #region mapping
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            _cofoundryDbContextInitializer.Configure(this, optionsBuilder);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .UseDefaultConfig(DbConstants.CofoundryPluginSchema)
+                .HasDefaultSchema(DbConstants.CofoundryPluginSchema)
                 .ApplyConfiguration(new ErrorMap());
         }
-
-        #endregion
     }
 }
