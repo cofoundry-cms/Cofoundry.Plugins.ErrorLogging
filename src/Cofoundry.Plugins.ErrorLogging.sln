@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cofoundry.Plugins.ErrorLogging", "Cofoundry.Plugins.ErrorLogging\Cofoundry.Plugins.ErrorLogging.csproj", "{770CBAB8-61A8-4B87-8A03-B142BB61599A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cofoundry.Plugins.ErrorLogging", "Cofoundry.Plugins.ErrorLogging\Cofoundry.Plugins.ErrorLogging.csproj", "{770CBAB8-61A8-4B87-8A03-B142BB61599A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cofoundry.Plugins.ErrorLogging.Admin", "Cofoundry.Plugins.ErrorLogging.Admin\Cofoundry.Plugins.ErrorLogging.Admin.csproj", "{6C9E6D5E-2591-4F1C-966D-31E2E3FF84CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cofoundry.Plugins.ErrorLogging.Admin", "Cofoundry.Plugins.ErrorLogging.Admin\Cofoundry.Plugins.ErrorLogging.Admin.csproj", "{6C9E6D5E-2591-4F1C-966D-31E2E3FF84CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{FA681052-563E-46F8-8346-48E1E6747041}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorLoggingExample", "ErrorLoggingExample\ErrorLoggingExample.csproj", "{73C1E2F0-B848-4EEB-A1A6-36CD96F2CE62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +25,18 @@ Global
 		{6C9E6D5E-2591-4F1C-966D-31E2E3FF84CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C9E6D5E-2591-4F1C-966D-31E2E3FF84CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C9E6D5E-2591-4F1C-966D-31E2E3FF84CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73C1E2F0-B848-4EEB-A1A6-36CD96F2CE62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73C1E2F0-B848-4EEB-A1A6-36CD96F2CE62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73C1E2F0-B848-4EEB-A1A6-36CD96F2CE62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73C1E2F0-B848-4EEB-A1A6-36CD96F2CE62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{73C1E2F0-B848-4EEB-A1A6-36CD96F2CE62} = {FA681052-563E-46F8-8346-48E1E6747041}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {03096141-C2F9-4E8F-BCA8-3DDC89D62D1D}
 	EndGlobalSection
 EndGlobal

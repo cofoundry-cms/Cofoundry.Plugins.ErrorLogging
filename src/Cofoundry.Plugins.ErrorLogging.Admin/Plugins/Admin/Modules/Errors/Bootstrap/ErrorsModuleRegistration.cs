@@ -9,6 +9,13 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
 {
     public class ErrorsModuleRegistration : IPluginAngularModuleRegistration
     {
+        private readonly AdminSettings _adminSettings;
+
+        public ErrorsModuleRegistration(AdminSettings adminSettings)
+        {
+            _adminSettings = adminSettings;
+        }
+
         public AdminModule GetModule()
         {
             var module = new AdminModule()
@@ -18,7 +25,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
                 Description = "View the site error logs.",
                 MenuCategory = AdminModuleMenuCategory.Settings,
                 PrimaryOrdering = AdminModuleMenuPrimaryOrdering.Tertiary,
-                Url = new ErrorsRouteLibrary().List(),
+                Url = new ErrorsRouteLibrary(_adminSettings).List(),
                 RestrictedToPermission = new ErrorLogReadPermission()
             };
 
