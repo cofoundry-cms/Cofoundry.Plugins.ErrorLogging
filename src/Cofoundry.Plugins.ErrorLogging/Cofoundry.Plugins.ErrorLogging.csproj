@@ -15,7 +15,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Web" Version="0.5.0-beta0004" />
+    <PackageReference Include="Cofoundry.Web" Version="0.5.0-beta0023" />
   </ItemGroup>
 
   <ItemGroup>
