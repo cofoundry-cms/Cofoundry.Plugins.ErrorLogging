@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cofoundry.Web.Admin" Version="0.5.0-beta0023" />
+    <PackageReference Include="Cofoundry.Web.Admin" Version="0.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
