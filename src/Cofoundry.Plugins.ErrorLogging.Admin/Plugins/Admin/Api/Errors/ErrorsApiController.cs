@@ -31,7 +31,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
             if (query == null) query = new SearchErrorSummariesQuery();
 
             var results = await _queryExecutor.ExecuteAsync(query);
-            return _apiResponseHelper.SimpleQueryResponse(this, results);
+            return _apiResponseHelper.SimpleQueryResponse(results);
         }
         
         public async Task<IActionResult> GetById(int errorId)
@@ -39,7 +39,7 @@ namespace Cofoundry.Plugins.ErrorLogging.Admin
             var query = new GetErrorDetailsByIdQuery(errorId);
             var result = await _queryExecutor.ExecuteAsync(query);
 
-            return _apiResponseHelper.SimpleQueryResponse(this, result);
+            return _apiResponseHelper.SimpleQueryResponse(result);
         }
     }
 }
