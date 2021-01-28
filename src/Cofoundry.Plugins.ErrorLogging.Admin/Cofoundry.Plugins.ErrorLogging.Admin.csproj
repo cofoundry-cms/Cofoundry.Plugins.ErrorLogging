@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Build\node_modules\**" />
-    <EmbeddedResource Remove="Build\node_modules\**" />
-    <None Remove="Build\node_modules\**" />
+    <Compile Remove="**\node_modules\**" />
+    <EmbeddedResource Remove="**\node_modules\**" />
+    <None Remove="**\node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
