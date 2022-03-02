@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Cofoundry.Domain;
+using Cofoundry.Domain.CQS;
+using Cofoundry.Plugins.ErrorLogging.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cofoundry.Domain.CQS;
-using Cofoundry.Domain;
-using Cofoundry.Plugins.ErrorLogging.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Cofoundry.Plugins.ErrorLogging.Domain
 {
-    public class GetErrorDetailsByIdQueryHandler 
-        : IAsyncQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails>
+    public class GetErrorDetailsByIdQueryHandler
+        : IQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails>
         , IPermissionRestrictedQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails>
     {
         private readonly ErrorLoggingDbContext _dbContext;
@@ -49,13 +48,9 @@ namespace Cofoundry.Plugins.ErrorLogging.Domain
             return error;
         }
 
-        #region Permission
-
         public IEnumerable<IPermissionApplication> GetPermissions(GetErrorDetailsByIdQuery query)
         {
             yield return new ErrorLogReadPermission();
         }
-
-        #endregion
     }
 }
