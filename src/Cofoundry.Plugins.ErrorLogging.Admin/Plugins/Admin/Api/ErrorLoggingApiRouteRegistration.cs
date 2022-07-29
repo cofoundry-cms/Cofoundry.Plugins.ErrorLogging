@@ -1,23 +1,19 @@
 ﻿using Cofoundry.Web;
-using Microsoft.AspNetCore.Routing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Cofoundry.Web.Admin;
+using Microsoft.AspNetCore.Routing;
 
-namespace Cofoundry.Plugins.ErrorLogging.Admin
+namespace Cofoundry.Plugins.ErrorLogging.Admin;
+
+public class ErrorLoggingApiRouteRegistration : IOrderedRouteRegistration
 {
-    public class ErrorLoggingApiRouteRegistration : IOrderedRouteRegistration
-    {
-        public int Ordering => (int)RouteRegistrationOrdering.Early;
+    public int Ordering => (int)RouteRegistrationOrdering.Early;
 
-        public void RegisterRoutes(IEndpointRouteBuilder routeBuilder)
-        {
-            routeBuilder
-                .ForAdminApiController<ErrorsApiController>("plugins/errors")
-                .MapGet()
-                .MapGetById("{errorId:int}")
-                ;
-        }
+    public void RegisterRoutes(IEndpointRouteBuilder routeBuilder)
+    {
+        routeBuilder
+            .ForAdminApiController<ErrorsApiController>("plugins/errors")
+            .MapGet()
+            .MapGetById("{errorId:int}")
+            ;
     }
 }

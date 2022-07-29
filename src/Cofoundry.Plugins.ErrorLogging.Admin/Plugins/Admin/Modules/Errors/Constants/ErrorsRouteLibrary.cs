@@ -1,8 +1,5 @@
 ﻿using Cofoundry.Domain;
 using Cofoundry.Web.Admin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Cofoundry.Plugins.ErrorLogging.Admin
 {

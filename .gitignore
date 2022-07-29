@@ -77,7 +77,7 @@ ehthumbs.db
 # Mac crap
 .DS_Store
 
-src/.vs
+.vs
 
 # Cake Build
 /tools

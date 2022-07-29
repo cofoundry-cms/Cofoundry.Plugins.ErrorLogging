@@ -1,65 +1,58 @@
-﻿using Cofoundry.Domain;
-using Cofoundry.Domain.CQS;
-using Cofoundry.Domain.Data;
+﻿using Cofoundry.Domain.Data;
 using Cofoundry.Plugins.ErrorLogging.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Cofoundry.Plugins.ErrorLogging.Domain
+namespace Cofoundry.Plugins.ErrorLogging.Domain;
+
+public class SearchErrorSummariesQueryHandler
+    : IQueryHandler<SearchErrorSummariesQuery, PagedQueryResult<ErrorSummary>>
+    , IPermissionRestrictedQueryHandler<SearchErrorSummariesQuery, PagedQueryResult<ErrorSummary>>
 {
-    public class SearchErrorSummariesQueryHandler
-        : IQueryHandler<SearchErrorSummariesQuery, PagedQueryResult<ErrorSummary>>
-        , IPermissionRestrictedQueryHandler<SearchErrorSummariesQuery, PagedQueryResult<ErrorSummary>>
+    private readonly ErrorLoggingDbContext _dbContext;
+
+    public SearchErrorSummariesQueryHandler(
+        ErrorLoggingDbContext dbContext
+        )
     {
-        private readonly ErrorLoggingDbContext _dbContext;
+        _dbContext = dbContext;
+    }
 
-        public SearchErrorSummariesQueryHandler(
-            ErrorLoggingDbContext dbContext
-            )
+    public async Task<PagedQueryResult<ErrorSummary>> ExecuteAsync(SearchErrorSummariesQuery query, IExecutionContext executionContext)
+    {
+        var result = await CreateQuery(query).ToPagedResultAsync(query);
+
+        return result;
+    }
+
+    private IQueryable<ErrorSummary> CreateQuery(SearchErrorSummariesQuery query)
+    {
+        var dbQuery = _dbContext
+            .Errors
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(query.Text))
         {
-            _dbContext = dbContext;
+            dbQuery = dbQuery.Where(u =>
+                u.Url.Contains(query.Text)
+                || u.UserAgent.Contains(query.Text)
+                || u.ExceptionType.Contains(query.Text)
+                );
         }
 
-        public async Task<PagedQueryResult<ErrorSummary>> ExecuteAsync(SearchErrorSummariesQuery query, IExecutionContext executionContext)
-        {
-            var result = await CreateQuery(query).ToPagedResultAsync(query);
-
-            return result;
-        }
-
-        private IQueryable<ErrorSummary> CreateQuery(SearchErrorSummariesQuery query)
-        {
-            var dbQuery = _dbContext
-                .Errors
-                .AsNoTracking()
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(query.Text))
+        return dbQuery
+            .OrderByDescending(u => u.CreateDate)
+            .Select(e => new ErrorSummary()
             {
-                dbQuery = dbQuery.Where(u =>
-                    u.Url.Contains(query.Text)
-                    || u.UserAgent.Contains(query.Text)
-                    || u.ExceptionType.Contains(query.Text)
-                    );
-            }
+                CreateDate = e.CreateDate,
+                ErrorId = e.ErrorId,
+                ExceptionType = e.ExceptionType,
+                Url = e.Url,
+                UserAgent = e.UserAgent
+            });
+    }
 
-            return dbQuery
-                .OrderByDescending(u => u.CreateDate)
-                .Select(e => new ErrorSummary()
-                {
-                    CreateDate = e.CreateDate,
-                    ErrorId = e.ErrorId,
-                    ExceptionType = e.ExceptionType,
-                    Url = e.Url,
-                    UserAgent = e.UserAgent
-                });
-        }
-
-        public IEnumerable<IPermissionApplication> GetPermissions(SearchErrorSummariesQuery query)
-        {
-            yield return new ErrorLogReadPermission();
-        }
+    public IEnumerable<IPermissionApplication> GetPermissions(SearchErrorSummariesQuery query)
+    {
+        yield return new ErrorLogReadPermission();
     }
 }

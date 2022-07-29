@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Cofoundry.Plugins.ErrorLogging.Domain;
 
-namespace Cofoundry.Plugins.ErrorLogging.Domain
+public interface IErrorLoggingService
 {
-    public interface IErrorLoggingService
-    {
-        Task LogAsync(Exception ex);
-    }
+    Task LogAsync(Exception ex);
 }

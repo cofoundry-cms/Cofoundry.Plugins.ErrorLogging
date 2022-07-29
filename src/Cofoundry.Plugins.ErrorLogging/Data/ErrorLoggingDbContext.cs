@@ -1,37 +1,31 @@
 using Cofoundry.Core;
 using Cofoundry.Core.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using System;
 
-namespace Cofoundry.Plugins.ErrorLogging.Data
+namespace Cofoundry.Plugins.ErrorLogging.Data;
+
+public partial class ErrorLoggingDbContext : DbContext
 {
-    public partial class ErrorLoggingDbContext : DbContext
+    private readonly ICofoundryDbContextInitializer _cofoundryDbContextInitializer;
+
+    public ErrorLoggingDbContext(
+        ICofoundryDbContextInitializer cofoundryDbContextInitializer
+        )
     {
-        #region constructor
+        _cofoundryDbContextInitializer = cofoundryDbContextInitializer;
+    }
 
-        private readonly ICofoundryDbContextInitializer _cofoundryDbContextInitializer;
+    public DbSet<Error> Errors { get; set; }
 
-        public ErrorLoggingDbContext(
-            ICofoundryDbContextInitializer cofoundryDbContextInitializer
-            )
-        {
-            _cofoundryDbContextInitializer = cofoundryDbContextInitializer;
-        }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        _cofoundryDbContextInitializer.Configure(this, optionsBuilder);
+    }
 
-        #endregion
-
-        public DbSet<Error> Errors { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            _cofoundryDbContextInitializer.Configure(this, optionsBuilder);
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder
-                .HasDefaultSchema(DbConstants.CofoundryPluginSchema)
-                .ApplyConfiguration(new ErrorMap());
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .HasDefaultSchema(DbConstants.CofoundryPluginSchema)
+            .ApplyConfiguration(new ErrorMap());
     }
 }

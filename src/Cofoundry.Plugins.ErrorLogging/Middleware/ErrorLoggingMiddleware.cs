@@ -1,50 +1,45 @@
 ﻿using Cofoundry.Plugins.ErrorLogging.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Cofoundry.Plugins.ErrorLogging
+namespace Cofoundry.Plugins.ErrorLogging;
+
+public class ErrorLoggingMiddleware
 {
-    public class ErrorLoggingMiddleware
+    private readonly RequestDelegate _next;
+
+    public ErrorLoggingMiddleware(
+        RequestDelegate next
+        )
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public ErrorLoggingMiddleware(
-            RequestDelegate next
-            )
+    public async Task Invoke(
+        HttpContext context,
+        ILogger<ErrorLoggingMiddleware> logger,
+        IErrorLoggingService errorLoggingService
+        )
+    {
+        try
         {
-            _next = next;
+            await _next(context);
         }
-
-        public async Task Invoke(
-            HttpContext context,
-            ILogger<ErrorLoggingMiddleware> logger,
-            IErrorLoggingService errorLoggingService
-            )
+        catch (Exception ex)
         {
             try
             {
-                await _next(context);
+                await errorLoggingService.LogAsync(ex);
             }
-            catch (Exception ex)
+            catch (Exception loggingEx)
             {
-                try
-                {
-                    await errorLoggingService.LogAsync(ex);
-                }
-                catch (Exception loggingEx)
-                {
-                    // The original exception should still be logged by the outer handler, here we
-                    // just log loggingEx
-                    var msg = "An error occured logging exception {0} using handler type {1}";
-                    logger.LogError(0, loggingEx, msg, ex.GetType().FullName, errorLoggingService.GetType().FullName);
-                }
-
-                throw;
+                // The original exception should still be logged by the outer handler, here we
+                // just log loggingEx
+                var msg = "An error occured logging exception {0} using handler type {1}";
+                logger.LogError(0, loggingEx, msg, ex.GetType().FullName, errorLoggingService.GetType().FullName);
             }
+
+            throw;
         }
     }
 }

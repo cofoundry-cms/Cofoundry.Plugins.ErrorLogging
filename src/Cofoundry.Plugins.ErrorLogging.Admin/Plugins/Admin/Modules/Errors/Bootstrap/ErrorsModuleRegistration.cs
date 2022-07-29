@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Cofoundry.Domain;
-using Cofoundry.Web.Admin;
+﻿using Cofoundry.Domain;
 using Cofoundry.Plugins.ErrorLogging.Domain;
+using Cofoundry.Web.Admin;
 
 namespace Cofoundry.Plugins.ErrorLogging.Admin
 {

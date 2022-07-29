@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cofoundry.Core.DependencyInjection;
-using Cofoundry.Plugins.ErrorLogging.Domain;
+﻿using Cofoundry.Core.DependencyInjection;
 using Cofoundry.Plugins.ErrorLogging.Data;
+using Cofoundry.Plugins.ErrorLogging.Domain;
 
-namespace Cofoundry.Plugins.ErrorLogging.Bootstrap
+namespace Cofoundry.Plugins.ErrorLogging.Bootstrap;
+
+public class ErrorDependencyRegistration : IDependencyRegistration
 {
-    public class ErrorDependencyRegistration : IDependencyRegistration
+    public void Register(IContainerRegister container)
     {
-        public void Register(IContainerRegister container)
-        {
-            container
-                .Register<IErrorLoggingService, ErrorLoggingService>()
-                .Register<ErrorLoggingDbContext>()
-                ;
-        }
+        container
+            .Register<IErrorLoggingService, ErrorLoggingService>()
+            .Register<ErrorLoggingDbContext>()
+            ;
     }
 }
