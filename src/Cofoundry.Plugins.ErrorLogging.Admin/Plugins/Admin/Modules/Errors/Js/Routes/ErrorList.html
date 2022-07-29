@@ -41,7 +41,7 @@
                 </tr>
                 <tr ng-repeat="error in vm.result.items">
                     <td>
-                        <a href="#/{{::error.errorId}}">{{::error.exceptionType}}</a>
+                        <a href="#/{{::error.errorId}}" style="word-break:break-word">{{::error.exceptionType}}</a>
                     </td>
                     <td>
                         <a href="{{::error.url}}">{{::error.url}}</a>
