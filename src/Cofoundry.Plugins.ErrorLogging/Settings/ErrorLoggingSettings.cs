@@ -1,4 +1,4 @@
-﻿using Cofoundry.Core.Configuration;
+using Cofoundry.Core.Configuration;
 
 namespace Cofoundry.Plugins.ErrorLogging;
 
@@ -11,5 +11,5 @@ public class ErrorLoggingSettings : PluginConfigurationSettingsBase
     /// If set, an email notification will be sent to this address
     /// every time an error occurs.
     /// </summary>
-    public string LogToEmailAddress { get; set; }
+    public string? LogToEmailAddress { get; set; }
 }

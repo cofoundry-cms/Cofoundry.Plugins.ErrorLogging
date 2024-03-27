@@ -1,5 +1,3 @@
-﻿using Cofoundry.Domain;
-
 namespace Cofoundry.Plugins.ErrorLogging.Domain;
 
 public class ErrorLogReadPermission : IPermission

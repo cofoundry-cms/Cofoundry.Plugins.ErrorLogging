@@ -1,12 +1,13 @@
-﻿using Cofoundry.Core.Mail;
+using System.Diagnostics;
+using System.Text;
+using Cofoundry.Core;
+using Cofoundry.Core.Mail;
 using Cofoundry.Plugins.ErrorLogging.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using System.Diagnostics;
-using System.Text;
 
 namespace Cofoundry.Plugins.ErrorLogging.Domain;
 
@@ -43,8 +44,6 @@ public class ErrorLoggingService : IErrorLoggingService
 
         var error = MapError(inner, httpContext);
         string additionalText;
-        Exception dbLoggingException = null;
-
         try
         {
             _dbContext.Errors.Add(error);
@@ -53,10 +52,9 @@ public class ErrorLoggingService : IErrorLoggingService
         }
         catch (Exception loggingEx)
         {
-            dbLoggingException = loggingEx;
-            additionalText = String.Format("\r\n\r\nSaved in DB: No\r\n\r\nException:{0}", loggingEx.Message);
+            additionalText = $"\r\n\r\nSaved in DB: No\r\n\r\nException:{loggingEx.Message}";
 
-            var msg = "An exception occured while logging an error to the database.";
+            const string msg = "An exception occured while logging an error to the database.";
             _logger.LogError(0, loggingEx, msg);
             Debug.Assert(false, msg);
         }
@@ -65,26 +63,26 @@ public class ErrorLoggingService : IErrorLoggingService
         {
             try
             {
-                await SendMailAsync(httpContext, error, additionalText);
+                await SendMailAsync(_errorLoggingSettings.LogToEmailAddress, httpContext, error, additionalText);
                 error.EmailSent = true;
                 _dbContext.SaveChanges();
             }
             catch (Exception mailException)
             {
-                var msg = "An exception occured while sending an error logging email.";
+                const string msg = "An exception occured while sending an error logging email.";
                 _logger.LogError(0, mailException, msg);
                 Debug.Assert(false, msg);
             }
         }
     }
 
-    private Error MapError(Exception ex, HttpContext context)
+    private static Error MapError(Exception ex, HttpContext? context)
     {
-        Error error = new Error
+        var error = new Error
         {
-            Source = ex.Source ?? string.Empty,
+            Source = TextFormatter.Limit(ex.Source, 100) ?? string.Empty,
             ExceptionType = ex.Message ?? string.Empty,
-            Target = string.Empty, // removed in netcore?
+            Target = TextFormatter.Limit(ex.TargetSite?.Name, 255) ?? string.Empty,
             StackTrace = ex.StackTrace ?? string.Empty,
             EmailSent = false,
             CreateDate = DateTime.UtcNow
@@ -92,8 +90,8 @@ public class ErrorLoggingService : IErrorLoggingService
 
         if (context != null && context.Request != null)
         {
-            error.Url = context.Request.Method + " " + context.Request.GetDisplayUrl();
-            error.QueryString = context.Request.QueryString.ToString();
+            error.Url = TextFormatter.Limit(context.Request.Method + " " + context.Request.GetDisplayUrl(), 255);
+            error.QueryString = TextFormatter.Limit(context.Request.QueryString.ToString(), 255);
             if (context.Request.HasFormContentType)
             {
                 var formItems = context
@@ -103,7 +101,7 @@ public class ErrorLoggingService : IErrorLoggingService
                     .Select(k => $"{k}: {context.Request.Form[k]}");
                 error.Form = string.Join(Environment.NewLine, formItems);
             }
-            error.UserAgent = context.Request.Headers[HeaderNames.UserAgent];
+            error.UserAgent = TextFormatter.Limit(context.Request.Headers[HeaderNames.UserAgent], 255);
 
             if (context.Features.Get<ISessionFeature>() != null && context.Session.IsAvailable)
             {
@@ -124,11 +122,16 @@ public class ErrorLoggingService : IErrorLoggingService
         return error;
     }
 
-    private async Task SendMailAsync(HttpContext httpContxt, Error error, string additionalText)
+    private async Task SendMailAsync(
+        string logToEmailAddress,
+        HttpContext? httpContxt,
+        Error error,
+        string additionalText
+        )
     {
         var hasRequest = httpContxt != null && httpContxt.Request != null;
         var user = await _userContextService.GetCurrentContextAsync();
-        var userText = user == null ? "Unauthenticated" : String.Format("{0}: {1}", user?.UserArea.Name, user.UserId);
+        var userText = user == null ? "Unauthenticated" : $"{user.UserArea?.Name}: {user.UserId}";
 
         var bodyText = new StringBuilder();
         bodyText.AppendLine("Url: " + error.Url);
@@ -146,7 +149,7 @@ public class ErrorLoggingService : IErrorLoggingService
             bodyText.AppendLine("Query string: " + error.QueryString);
             bodyText.AppendLine();
 
-            if (!String.IsNullOrEmpty(error.UserAgent))
+            if (!string.IsNullOrEmpty(error.UserAgent))
             {
                 bodyText.AppendLine("UserAgent: " + error.UserAgent);
                 bodyText.AppendLine();
@@ -175,11 +178,12 @@ public class ErrorLoggingService : IErrorLoggingService
         }
 
         bodyText.AppendLine(additionalText);
-
-        var msg = new MailMessage();
-        msg.TextBody = bodyText.ToString();
-        msg.To = new MailAddress(_errorLoggingSettings.LogToEmailAddress);
-        msg.Subject = "Exception: " + error.Source;
+        var msg = new MailMessage
+        {
+            TextBody = bodyText.ToString(),
+            To = new MailAddress(logToEmailAddress),
+            Subject = "Exception: " + error.Source
+        };
 
         if (!Debugger.IsAttached)
         {

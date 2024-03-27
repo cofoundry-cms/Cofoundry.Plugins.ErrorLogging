@@ -1,10 +1,10 @@
-﻿using Cofoundry.Web;
+using Cofoundry.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseLocalConfigFile();
 
 builder.Services
-    .AddControllersWithViews()
+    .AddMvc()
     .AddCofoundry(builder.Configuration);
 
 var app = builder.Build();

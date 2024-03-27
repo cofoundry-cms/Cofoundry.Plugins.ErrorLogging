@@ -1,4 +1,4 @@
-﻿using Cofoundry.Domain.CQS;
+using Cofoundry.Domain.CQS;
 using Cofoundry.Plugins.ErrorLogging.Domain;
 using Cofoundry.Web;
 using Cofoundry.Web.Admin;
@@ -22,7 +22,7 @@ public class ErrorsApiController : BaseAdminApiController
 
     public async Task<IActionResult> Get([FromQuery] SearchErrorSummariesQuery query)
     {
-        if (query == null) query = new SearchErrorSummariesQuery();
+        query ??= new SearchErrorSummariesQuery();
 
         var results = await _queryExecutor.ExecuteAsync(query);
         return _apiResponseHelper.SimpleQueryResponse(results);

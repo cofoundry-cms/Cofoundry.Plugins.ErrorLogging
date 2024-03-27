@@ -1,10 +1,10 @@
-﻿using Cofoundry.Plugins.ErrorLogging.Data;
+using Cofoundry.Plugins.ErrorLogging.Data;
 
 namespace Cofoundry.Plugins.ErrorLogging.Domain;
 
 public class GetErrorDetailsByIdQueryHandler
-    : IQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails>
-    , IPermissionRestrictedQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails>
+    : IQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails?>
+    , IPermissionRestrictedQueryHandler<GetErrorDetailsByIdQuery, ErrorDetails?>
 {
     private readonly ErrorLoggingDbContext _dbContext;
 
@@ -15,7 +15,7 @@ public class GetErrorDetailsByIdQueryHandler
         _dbContext = dbContext;
     }
 
-    public async Task<ErrorDetails> ExecuteAsync(GetErrorDetailsByIdQuery query, IExecutionContext executionContext)
+    public async Task<ErrorDetails?> ExecuteAsync(GetErrorDetailsByIdQuery query, IExecutionContext executionContext)
     {
         var error = await _dbContext
             .Errors

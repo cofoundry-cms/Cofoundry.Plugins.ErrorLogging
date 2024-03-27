@@ -1,4 +1,4 @@
-﻿using Cofoundry.Domain.Data;
+using Cofoundry.Domain.Data;
 using Cofoundry.Plugins.ErrorLogging.Data;
 
 namespace Cofoundry.Plugins.ErrorLogging.Domain;
@@ -33,8 +33,8 @@ public class SearchErrorSummariesQueryHandler
         if (!string.IsNullOrEmpty(query.Text))
         {
             dbQuery = dbQuery.Where(u =>
-                u.Url.Contains(query.Text)
-                || u.UserAgent.Contains(query.Text)
+                u.Url!.Contains(query.Text)
+                || u.UserAgent!.Contains(query.Text)
                 || u.ExceptionType.Contains(query.Text)
                 );
         }

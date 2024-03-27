@@ -1,6 +1,6 @@
-﻿namespace Cofoundry.Plugins.ErrorLogging.Domain;
+namespace Cofoundry.Plugins.ErrorLogging.Domain;
 
-public class GetErrorDetailsByIdQuery : IQuery<ErrorDetails>
+public class GetErrorDetailsByIdQuery : IQuery<ErrorDetails?>
 {
     public GetErrorDetailsByIdQuery() { }
 

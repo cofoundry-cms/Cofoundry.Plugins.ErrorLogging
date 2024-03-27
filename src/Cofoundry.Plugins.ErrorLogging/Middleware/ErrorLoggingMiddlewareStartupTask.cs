@@ -1,4 +1,4 @@
-﻿using Cofoundry.Web;
+using Cofoundry.Web;
 using Microsoft.AspNetCore.Builder;
 
 namespace Cofoundry.Plugins.ErrorLogging;
@@ -10,7 +10,7 @@ public class ErrorLoggingMiddlewareStartupTask : IRunAfterStartupConfigurationTa
         get { return (int)StartupTaskOrdering.First; }
     }
 
-    public ICollection<Type> RunAfter => new Type[] { typeof(ErrorHandlingMiddlewareConfigurationTask) };
+    public IReadOnlyCollection<Type> RunAfter => [typeof(ErrorHandlingMiddlewareConfigurationTask)];
 
     public void Configure(IApplicationBuilder app)
     {

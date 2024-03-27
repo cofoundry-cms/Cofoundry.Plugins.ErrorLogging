@@ -1,5 +1,4 @@
 using Cofoundry.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cofoundry.Plugins.ErrorLogging.Data;
